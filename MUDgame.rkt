@@ -69,5 +69,16 @@
              (add-object inventorydb 'bag (first item))
              (hash-set! db id result))))))
 
+(define (remove-object-from-inventory db id str)
+  (when (hash-has-key? db 'bag)
+    (let* ((record (hash-ref db 'bag))
+           (result (remove (lambda (x) (string-suffix-ci? str x)) record))
+           (item (lset-difference equal? record result)))
+      (cond ((null? item)
+             (printf "You are not carrying that item!\n"))
+            (else
+             (printf "Removed ~a from your bag.\n" (first item))
+             (add-object objectdb id (first item))
+             (hash-set! db 'bag result))))))
 
 
