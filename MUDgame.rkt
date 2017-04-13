@@ -4,8 +4,9 @@
 (require srfi/13)
 
 ;; specifying objects descriptions
-(define objects '((1 "a short sword")
-                  (1 "a shapphire key")))
+(define objects '((1 "a ruby key")
+                  (2 "a shapphire key")
+                  (6 "the Holy Grail")))
 
 ;; defining room descriptions
 (define descriptions '((1 "You are in the chamber.")
@@ -13,7 +14,7 @@
                        (3 "You are in the great hall.")
                        (4 "You are in a chapel.")
                        (5 "You are in a storeroom.")
-                       (6 "You are in secret room.")))
+                       (6 "You are in the Treasury.")))
 
 ;; defining actions
 (define look '(((directions) look) ((look) look) ((examine room) look)))
@@ -70,7 +71,11 @@
             (else
              (printf "Added ~a to your bag.\n" (first item))
              (add-object inventorydb 'bag (first item))
-             (hash-set! db id result))))))
+             (if (eq? (first item) "the Holy Grail")
+                 (begin
+                   (printf "\nYou have found the source of infinite wisdom and immortality!\n")
+                   (exit))
+             (hash-set! db id result)))))))
 
 (define (remove-object-from-inventory db id str)
   (when (hash-has-key? db 'bag)
