@@ -81,4 +81,14 @@
              (add-object objectdb id (first item))
              (hash-set! db 'bag result))))))
 
+(define (pick-item id input)
+  (let ((item (string-join (cdr (string-split input)))))
+    (remove-object-from-room objectdb id item)))
+
+(define (put-item id input)
+  (let ((item (string-join (cdr (string-split input)))))
+    (remove-object-from-inventory inventorydb id item)))
+
+(define (display-inventory)
+  (display-objects inventorydb 'bag))
 
