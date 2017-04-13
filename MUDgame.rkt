@@ -48,3 +48,16 @@
 
 (add-objects objectdb)
 
+(define (display-objects db id)
+  (when (hash-has-hey? db id)
+    (let* ((record (hash-ref db id))
+           (output (string-join record " and ")))
+      (when (not (equal? output ""))
+        (if (eq? id 'bag)
+            (printf "You are carrying ~a.\n" output)
+            (printf "You can see ~a.\n" output))))))
+
+
+
+
+
