@@ -26,9 +26,9 @@
 ;; defining decisiontable
 (define decisiontable `((1 ((east) 2) ,@actions)
                         (2 ((west) 1) ((east) 3) ,@actions)
-                        (3 ((west) 2) ((north) 5) ((south) 4) ,@actions)
+                        (3 ((west) 2) ((north) 5) ((south) 4) ((east) 6) ,@actions)
                         (4 ((north) 3) ,@actions)
-                        (5 ((south) 3) ((east) 6) ,@actions)
+                        (5 ((south) 3) ,@actions)
                         (6 ,@actions)))
   
 ;; load object database
@@ -154,7 +154,8 @@
 (define (startgame initial-id)
   (let loop ((id initial-id) (description #t))
     (when description
-      (display-description id))
+      (display-description id)
+      (display-objects objectdb id))
     (printf "> ")
     (let* ((input (read-line))
            (string-tokens (string-tokenize input))
