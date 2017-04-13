@@ -25,8 +25,11 @@
 
 ;; defining decisiontable
 (define decisiontable `((1 ((east) 2) ,@actions)
-                        (2 ((west) 1) ((east) 2) ,@actions)
-                        (3 ((west) 2) ((north) 5) ((south) 4) ,@actions)))
+                        (2 ((west) 1) ((east) 3) ,@actions)
+                        (3 ((west) 2) ((north) 5) ((south) 4) ,@actions)
+                        (4 ((north) 3) ,@actions)
+                        (5 ((south) 3) ((east) 6) ,@actions)
+                        (6 ,@actions)))
   
 ;; load object database
 (define objectdb (make-hash))
@@ -146,14 +149,13 @@
 (define (display-description id)
   (printf "~a\n" (get-description id)))
 
-(define (get-response id)
-  (car (assq-ref responses id)))
+
 
 (define (startgame initial-id)
   (let loop ((id initial-id) (description #t))
-    (if description
-        (printf "~a\n> " (get-response id))
-        (printf "> "))
+    (when description
+      (display-description id))
+    (printf "> ")
     (let* ((input (read-line))
            (string-tokens (string-tokenize input))
            (tokens (map string->symbol string-tokens)))
@@ -161,7 +163,7 @@
         (cond ((number? response)
                (loop response #t))
               ((eq? #f response)
-               (printf "huh? I didn't understand that!\n")
+               (printf "huh? I didn't get it!\n")
                (loop id #f))
               ((eq? response 'look)
                (get-directions id)
