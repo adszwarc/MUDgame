@@ -6,14 +6,15 @@
 ;; specifying objects descriptions
 (define objects '((1 "a ruby key")
                   (2 "a shapphire key")
-                  (6 "the Holy Grail")))
+                  (6 "the Holy Grail")
+                  (3 "a poisoned blade")))
 
 ;; defining room descriptions
-(define descriptions '((1 "You are in the chamber.")
-                       (2 "You are in the corridor.")
-                       (3 "You are in the great hall.")
-                       (4 "You are in a chapel.")
-                       (5 "You are in a storeroom.")
+(define descriptions '((1 "You are in the Chamber.")
+                       (2 "You are in the Corridor.")
+                       (3 "You are in the Great Hall.")
+                       (4 "You are in a Chapel.")
+                       (5 "You are in a Storeroom.")
                        (6 "You are in the Treasury.")))
 
 ;; defining actions
@@ -75,7 +76,11 @@
                  (begin
                    (printf "\nYou have found the source of infinite wisdom and immortality!\n")
                    (exit))
-             (hash-set! db id result)))))))
+             (if (eq? (first item) "a poisoned blade")
+                 (begin
+                   (printf "\nYou have cut yourself with the blade!\nYou can feel poison in your veins\nGAME OVER!")
+                   (exit))
+             (hash-set! db id result))))))))
 
 (define (remove-object-from-inventory db id str)
   (when (hash-has-key? db 'bag)
