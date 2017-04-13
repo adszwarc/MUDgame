@@ -95,6 +95,12 @@
 (define (slist->string l)
   (string-join (map symbol->string l)))
 
+(define (assq-ref assqlist id)
+  (cdr (assq id assqlist)))
+
+(define (assv-ref assqlist id)
+  (cdr (assv id assqlist)))
+
 (define (get-directions id)
   (let ((record (assq id decisiontable)))
     (let* ((result (filter (lambda (n) (number? (second n))) (cdr record)))
@@ -107,3 +113,71 @@
              (let* ((losym (map (lambda (x) (car x)) result))
                     (lostr (map (lambda (x) (slist->string x)) losym)))
                (printf "You can see exits to the ~a.\n" (string-join lostr " and "))))))))
+
+
+(define (get-keywords id)
+  (let ((keys (assq-ref decisiontable id)))
+    (map (λ (key) (car key)) keys)))
+
+(define (list-of-lengths keylist tokens)
+  (map 
+   (lambda (x)
+     (let ((set (lset-intersection eq? tokens x)))
+       (* (/ (length set) (length x)) (length set))))
+   keylist))
+
+(define (index-of-largest-number list-of-numbers)
+  (let ((n (car (sort list-of-numbers >))))
+    (if (zero? n)
+      #f
+      (list-index (lambda (x) (eq? x n)) list-of-numbers))))
+
+(define (get-description id)
+  (car (assq-ref descriptions id)))
+
+(define (lookup id tokens)
+  (let* ((record (assv-ref decisiontable id))
+         (keylist (get-keywords id))
+         (index (index-of-largest-number (list-of-lengths keylist tokens))))
+    (if index 
+      (cadr (list-ref record index))
+      #f)))
+
+(define (display-description id)
+  (printf "~a\n" (get-description id)))
+
+(define (get-response id)
+  (car (assq-ref responses id)))
+
+(define (startgame initial-id)
+  (let loop ((id initial-id) (description #t))
+    (if description
+        (printf "~a\n> " (get-response id))
+        (printf "> "))
+    (let* ((input (read-line))
+           (string-tokens (string-tokenize input))
+           (tokens (map string->symbol string-tokens)))
+      (let ((response (lookup id tokens)))
+        (cond ((number? response)
+               (loop response #t))
+              ((eq? #f response)
+               (printf "huh? I didn't understand that!\n")
+               (loop id #f))
+              ((eq? response 'look)
+               (get-directions id)
+               (loop id #t))
+              ((eq? response 'pick)
+               (pick-item id input)
+               (loop id #f))
+              ((eq? response 'drop)
+               (put-item id input)
+               (loop id #f))
+              ((eq? response 'inventory)
+               (display-inventory)
+               (loop id #f))              
+              ((eq? response 'quit)
+               (printf "Good bye!\n")
+               (exit)))))))
+
+
+
