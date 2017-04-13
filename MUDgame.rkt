@@ -36,7 +36,7 @@
 
 
 (define (add-object db id object)
-  (if (hash-has-hey? db id)
+  (if (hash-has-key? db id)
       (let ((record (hash-ref db id)))
         (hash-set! db id (cons object record)))
       (hash-set! db id (cons object empty))))
@@ -44,12 +44,12 @@
 (define (add-objects db)
   (for-each
    (λ (r)
-     (add-object db (first r) (second))) objects))
+     (add-object db (first r) (second r))) objects))
 
 (add-objects objectdb)
 
 (define (display-objects db id)
-  (when (hash-has-hey? db id)
+  (when (hash-has-key? db id)
     (let* ((record (hash-ref db id))
            (output (string-join record " and ")))
       (when (not (equal? output ""))
@@ -57,7 +57,17 @@
             (printf "You are carrying ~a.\n" output)
             (printf "You can see ~a.\n" output))))))
 
-
+(define (remove-object-from-room db id str)
+  (when (hash-has-key? db id)
+    (let* ((record (hash-ref db id))
+           (result (remove (λ (x) (string-suffix-ci? str x)) record))
+           (item (lset-difference equal? record result)))
+      (cond ((null? item)
+             (printf "I don't see that item in the room!\n"))
+            (else
+             (printf "Added ~a to your bag.\n" (first item))
+             (add-object inventorydb 'bag (first item))
+             (hash-set! db id result))))))
 
 
 
